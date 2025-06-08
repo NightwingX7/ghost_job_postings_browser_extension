@@ -9,6 +9,11 @@ Detect potentially reposted or ghost job listings on popular job boards like Lin
 - Tracks and stores seen listings to detect reposts over time.
 - Includes a popup with job count and a reset button.
 
+Example:
+
+![image](https://github.com/user-attachments/assets/e66ed1cb-2b1e-4fa1-9e24-86716f947fb9)
+
+
 ## How to Install (Temporary for Testing)
 
 1. Download and extract this extension.

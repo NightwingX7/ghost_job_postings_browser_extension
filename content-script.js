@@ -1,5 +1,12 @@
 (function () {
-  const keywords = ["fast-paced", "dynamic environment", "self-starter", "rockstar", "synergy", "wear many hats"];
+  const keywords = [
+    "fast-paced",
+    "dynamic environment",
+    "self-starter",
+    "rockstar",
+    "synergy",
+    "wear many hats"
+  ];
   const MIN_DAYS_OLD = 30;
 
   function showWarningBanner(message) {
@@ -10,18 +17,40 @@
     banner.innerText = message;
     Object.assign(banner.style, {
       position: "fixed",
-      top: "0",
+      top: "45px",
       left: "0",
       width: "100%",
-      padding: "10px",
-      backgroundColor: "orange",
-      color: "black",
+      padding: "5px",
+      backgroundColor: "red",
+      color: "white",
       zIndex: "99999",
       fontWeight: "bold",
       textAlign: "center"
     });
     document.body.prepend(banner);
-    console.log("[Ghost Job Detector] Banner injected.");
+    console.log("[Ghost Job Detector] Repost banner injected.");
+  }
+
+  function showKeywordBanner(message) {
+    if (document.querySelector("#ghost-job-keyword-banner")) return;
+
+    const banner = document.createElement("div");
+    banner.id = "ghost-job-keyword-banner";
+    banner.innerText = message;
+    Object.assign(banner.style, {
+      position: "fixed",
+      top: "50px",
+      left: "0",
+      width: "100%",
+      padding: "5px",
+      backgroundColor: "orange",
+      color: "black",
+      zIndex: "99998",
+      fontWeight: "bold",
+      textAlign: "center"
+    });
+    document.body.prepend(banner);
+    console.log("[Ghost Job Detector] Keyword banner injected.");
   }
 
   function hashJobContent(text) {
@@ -40,7 +69,7 @@
       const daysOld = Math.floor((new Date(today) - new Date(previous.date)) / (1000 * 60 * 60 * 24));
 
       if (previous.hash === hash && daysOld >= 30) {
-        showWarningBanner(`🚨 This job may have been reposted after ${daysOld} days`);
+        showWarningBanner(`👻 This job may have been reposted after ${daysOld} days`);
       }
     }
 
@@ -52,7 +81,11 @@
     let warningLevel = 0;
 
     let keywordHits = keywords.filter(kw => jobText.includes(kw));
-    if (keywordHits.length > 2) warningLevel++;
+    console.log("Keyword hits:", keywordHits);
+    if (keywordHits.length >= 1) {
+      warningLevel++;
+      showKeywordBanner("👻 This job posting may contain vague language. Proceed with caution. 👻");
+    }
 
     const repostRegex = /(reposted|this job has been reposted|was reposted|repost date|updated on)/i;
     if (repostRegex.test(jobText)) {
@@ -70,7 +103,7 @@
     }
 
     if (warningLevel >= 2) {
-      showWarningBanner("⚠️ This job may be a ghost listing or repost.");
+      showWarningBanner("👻 Be Careful! This job has been reposted and may be a ghost listing. 👻");
     }
 
     detectRepost(window.location.href, document.title, jobText);
@@ -90,7 +123,7 @@
 
     for (const sel of selectors) {
       const el = document.querySelector(sel);
-      if (el && el.innerText.length > 500) {
+      if (el && el.innerText.length > 400) {
         content = el.innerText;
         break;
       }
@@ -107,7 +140,7 @@
 
   function startScanner() {
     let attempts = 0;
-    const maxAttempts = 15;
+    const maxAttempts = 30;
 
     const interval = setInterval(() => {
       const success = scanPageForJobText();
@@ -115,7 +148,7 @@
       if (success || attempts >= maxAttempts) {
         clearInterval(interval);
       }
-    }, 1500);
+    }, 1000);
   }
 
   console.log("[Ghost Job Detector] Initializing...");

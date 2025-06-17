@@ -1,0 +1,43 @@
+name: Build and Package Ghost Job Detector Extension
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: 18
+
+    - name: Install ESLint
+      run: npm install -g eslint
+
+    - name: Create ESLint config (if not present)
+      run: |
+        if [ ! -f .eslintrc.json ]; then
+          echo '{ "env": { "browser": true, "es2021": true }, "extends": "eslint:recommended" }' > .eslintrc.json
+        fi
+
+    - name: Lint JavaScript files
+      run: eslint content-script.js || true
+
+    - name: Build extension ZIP
+      run: |
+        mkdir -p dist
+        zip -r dist/ghost-job-detector.zip manifest.json content-script.js popup.html || true
+
+    - name: Upload build artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: ghost-job-detector-extension
+        path: dist/ghost-job-detector.zip
